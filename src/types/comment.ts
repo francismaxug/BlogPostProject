@@ -5,6 +5,11 @@ export interface IComment {
   author: Types.ObjectId
   post: Types.ObjectId
 }
+export interface ICretaeComment {
+  comment: string
+  author: Types.ObjectId
+  post: string
+}
 
 export interface ICommentSchema extends IComment, Document {
   _id: Types.ObjectId
@@ -14,6 +19,6 @@ export interface ICommentSchema extends IComment, Document {
 
 export interface ICommentCreatedResponse {
   message: string
-  comment:ICommentSchema
+  comment: ICommentSchema
 }
 export interface ICommentModel extends Model<ICommentSchema> {}

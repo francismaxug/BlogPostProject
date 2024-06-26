@@ -1,11 +1,9 @@
-import {
-  adminLogin,
+import { Router } from "express"
+import { createUser, userLogin, logout } from "../../controllers/userController"
 
-} from "../../controllers/userController"
-import express from "express"
-import { protect } from "../../middleware/auth"
-const router = express.Router()
+const router = Router()
 
-router.post("/login", adminLogin)
-
+router.post("/register", createUser)
+router.post("/login", userLogin)
+router.get("/logout", logout)
 export default router

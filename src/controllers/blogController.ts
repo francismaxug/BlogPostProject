@@ -1,0 +1,104 @@
+import { NextFunction, Request, Response } from "express"
+import { catchAsync } from "../utils/catchAsync"
+import { blogValidator } from "../validators/appValidation"
+import createError from "../utils/appError"
+
+//-------create a Blog--------
+const createBlogPost = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { title, content } = req.body
+    const author = req.user?._id
+    console.log(author)
+
+    const { error } = blogValidator(req.body)
+    console.log(error)
+
+    if (error) {
+      const errorInputs = error.details[0].message
+      console.log(errorInputs)
+      return next(createError(errorInputs, 400))
+    }
+
+    const blog = await req.context.services?.blog.createBlog({
+      title,
+      content,
+      author
+    })
+
+    console.log(blog)
+    return res.status(200).json(blog)
+  }
+)
+
+//------------Get a blog--------------
+const getAblogPost = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const blogId = req.params.id
+    const blog = await req.context.services?.blog.getBlog(blogId)
+
+    console.log(blog)
+    return res.status(200).json(blog)
+  }
+)
+
+//-----Get-all-blog-Post-----------------
+const getAllBlogPost = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const page = parseInt(req.query.page as string) || 1
+    const limit = parseInt(req.query.limit as string) || 3
+
+    const allBlogs = await req.context.services?.blog.getAllBlogs(page, limit)
+
+    console.log(allBlogs)
+    return res.status(200).json(allBlogs)
+  }
+)
+
+//---update-blogPost------------
+const updateBlogPost = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const blogId = req.params.id
+    const { title, content } = req.body
+    const author = req.user?._id
+
+    //---update blog---------------
+    const updatedBlog = await req.context.services?.blog.updateBlog(
+      blogId,
+      author.toString(),
+      {
+        title,
+        content,
+        author
+      }
+    )
+
+    console.log(updatedBlog)
+    return res.status(200).json(updatedBlog)
+  }
+)
+
+//------delete blog--------------
+const deleteBlogPost = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const blogId = req.params.id
+
+    const author = req.user?._id //from middleware
+
+    //---update blog---------------
+    const deleteBlgMessage = await req.context.services?.blog.deleteBlog(
+      blogId,
+      author.toString()
+    )
+
+    console.log(deleteBlgMessage)
+    return res.status(200).json(deleteBlgMessage)
+  }
+)
+
+export {
+  createBlogPost,
+  getAblogPost,
+  getAllBlogPost,
+  updateBlogPost,
+  deleteBlogPost
+}

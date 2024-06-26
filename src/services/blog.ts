@@ -35,7 +35,22 @@ export class BlogServices extends IAppService {
   }
 
   //---get all blog posts------------
-  getAllBlogs = async () => {}
+  getAllBlogs = async (page: number, limit: number) => {
+    console.log(`Page: ${page}, Limit: ${limit}`)
+    const totalBlogs = await this.queryDB.blog.countDocuments()
+    const blogs = await this.queryDB.blog
+      .find()
+      .populate("author")
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .sort({ createdAt: -1 }) // Sort by newest first
+
+    return {
+      blogs,
+      totalPages: Math.ceil(totalBlogs / limit),
+      currentPage: page
+    }
+  }
 
   //----update blog post--------------------
 
@@ -46,7 +61,7 @@ export class BlogServices extends IAppService {
         throw createError("Blog post not found", 404)
       }
 
-      if (blog.author.toString() !== authorId.toString()) {
+      if (blog.author.toString() !== authorId) {
         throw createError("Unauthorized", 403)
       }
 

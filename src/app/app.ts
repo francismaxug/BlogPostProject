@@ -4,7 +4,9 @@ import cookieParser from "cookie-parser"
 import morgan from "morgan"
 import connectDB from "../models/serve"
 import handleError from "../middleware/customError"
-import userRouter from "../routes/api/userRoute"
+import userRoute from "../routes/api/userRoute"
+import blogRoute from "../routes/api/blogRoute"
+import commentsRoute from "../routes/api/commentRoute"
 import cors from "cors"
 import { Config } from "../config/serve"
 import { IAppContext } from "../types/app"
@@ -37,7 +39,12 @@ export const startApp = async (config: Config) => {
       req.context = appContext
       next()
     })
-    app.use("/api/v1/church", userRouter)
+
+    //-----routes-------
+    app.use("/api/v1/user", userRoute)
+    app.use("/api/v1/blog", blogRoute)
+    app.use("/api/v1/comment",commentsRoute)
+
     app.use(handleError)
 
     //-----------------404 route----------------------

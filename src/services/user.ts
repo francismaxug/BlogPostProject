@@ -1,13 +1,15 @@
+import { Request, Response } from "express"
 import { IAppContext, IAppService } from "../types/app"
-import { IUser } from "../types/user"
+import { ICreateUser, IUser, IUserLogin } from "../types/user"
 import createError from "../utils/appError"
+import generateToken from "../utils/token"
 
 export class UserServices extends IAppService {
   constructor(context: IAppContext) {
     super(context)
   }
 
-  createUser = async (input: IUser) => {
+  createUser = async (input: ICreateUser) => {
     try {
       //----check if useralready exist with email------
 
@@ -20,6 +22,9 @@ export class UserServices extends IAppService {
 
       const user = await this.queryDB.user.create(input)
       // token here
+      generateToken({ _id: user._id.toString() }, input.res)
+
+      //--return a response-----
       return {
         message: "User created successfully",
         user: {
@@ -33,17 +38,21 @@ export class UserServices extends IAppService {
     }
   }
 
-  login = async (input: IUser) => {
+  login = async (input: IUserLogin) => {
     try {
       const user = await this.queryDB.user.findOne({
         email: input.email
       })
 
+      //----check if user exist with email------
       if (!user) throw createError("Invalid Credentials", 404)
       const checkPassword = await user.comparePasswords(input.password)
+
+      //------check if password is correct------
       if (!checkPassword) throw createError("Invalid Credentials", 404)
 
       //token here
+      generateToken({ _id: user._id.toString() }, input.res)
 
       return {
         message: "Login successful",

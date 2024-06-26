@@ -1,5 +1,5 @@
 import { IAppContext, IAppService } from "../types/app"
-import { IComment } from "../types/comment"
+import { IComment, ICretaeComment } from "../types/comment"
 import createError from "../utils/appError"
 
 export class CommentServices extends IAppService {
@@ -7,8 +7,9 @@ export class CommentServices extends IAppService {
     super(context)
   }
 
-  createComment = async (input: IComment) => {
+  createComment = async (input: ICretaeComment) => {
     try {
+      console.log("seen")
       const newComment = await this.queryDB.comment.create(input)
 
       return {
@@ -36,6 +37,22 @@ export class CommentServices extends IAppService {
         comments,
         totalPages: Math.ceil(totalComments / limit), // Calculate total pages
         currentPage: page
+      }
+    } catch (err) {
+      throw err
+    }
+  }
+
+  deleteComment = async (commentId: string) => {
+    try {
+      const comment = await this.queryDB.comment.findByIdAndDelete(commentId)
+      if (!comment) {
+        throw createError("Comment not found", 404)
+      }
+
+      return {
+        message: "Comment deleted successfully",
+        deletedComment:comment
       }
     } catch (err) {
       throw err

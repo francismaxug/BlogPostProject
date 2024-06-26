@@ -2,9 +2,10 @@
 import Joi from "joi"
 
 //-------------------VALIDATE USER INPUTS---------------------
-const validateUser = (schema: Joi.ObjectSchema<any>) => (payload: any) =>
-  schema.validate(payload, { abortEarly: true })
-const userValidation = Joi.object({
+const validateUserRegister =
+  (schema: Joi.ObjectSchema<any>) => (payload: any) =>
+    schema.validate(payload, { abortEarly: true })
+const userValidationRegister = Joi.object({
   name: Joi.string().min(3).required(),
   email: Joi.string()
     .email({
@@ -17,8 +18,24 @@ const userValidation = Joi.object({
     .min(6)
     .required()
 })
-const userValidator = validateUser(userValidation)
 
+const userRegisterValidator = validateUserRegister(userValidationRegister)
+
+const validateUserLogin = (schema: Joi.ObjectSchema<any>) => (payload: any) =>
+  schema.validate(payload, { abortEarly: true })
+const userValidationLogin = Joi.object({
+  email: Joi.string()
+    .email({
+      minDomainSegments: 2,
+      tlds: { allow: ["com", "net", "gh"] }
+    })
+    .required(),
+  password: Joi.string()
+    .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
+    .min(6)
+    .required()
+})
+const userLoginValidator = validateUserLogin(userValidationLogin)
 //-------------------VALIDATE BLOG INPUTS---------------------
 
 const validateBlog = (schema: Joi.ObjectSchema<any>) => (payload: any) =>
@@ -38,4 +55,4 @@ const commentValidation = Joi.object({
 })
 const commentValidator = validateComment(commentValidation)
 
-export { userValidator, commentValidator, blogValidator }
+export { userLoginValidator, userRegisterValidator, commentValidator, blogValidator }

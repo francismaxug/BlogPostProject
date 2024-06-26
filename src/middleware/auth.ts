@@ -15,9 +15,10 @@ const protect = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     console.log(req)
     let token
+    //--get the token-----
+    token = req.cookies.jwt
 
-    token = req.cookies.session
-    // console.log(token)
+    console.log(token)
 
     if (!token) return next(createError("no token found", 404))
 
@@ -26,12 +27,12 @@ const protect = catchAsync(
       process.env.JWT_SECRET!
     ) as jwt.JwtPayload
     console.log(decodeUser)
-    if (!decodeUser) return next(createError("no token found", 404))
+    if (!decodeUser) return next(createError("unauthorized", 404))
 
-    const currentUser = await UserAdmin.findById(decodeUser.user._id).select(
+    const currentUser = await UserAdmin.findById(decodeUser._id).select(
       "-password"
     )
-    // console.log(currentUser)
+    console.log(currentUser)
     if (!currentUser) return next(createError("no token found", 404))
     req.user = currentUser
     next()
