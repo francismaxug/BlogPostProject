@@ -3,6 +3,10 @@ import { catchAsync } from "../utils/catchAsync"
 import { blogValidator } from "../validators/appValidation"
 import createError from "../utils/appError"
 
+interface QueryString {
+  [key: string]: string | string[] | undefined // Allow any string key-value pair
+}
+
 //-------create a Blog--------
 const createBlogPost = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -41,13 +45,31 @@ const getAblogPost = catchAsync(
   }
 )
 
+//---get all user blog post----------------
+
+const getAllMyBlogPost = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?._id
+
+    const allBlogs = await req.context.services?.blog.getMyBlogs(
+      req.query as QueryString,
+      userId.toString()
+    )
+
+    console.log(allBlogs)
+    return res.status(200).json(allBlogs)
+  }
+)
+
 //-----Get-all-blog-Post-----------------
 const getAllBlogPost = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const page = parseInt(req.query.page as string) || 1
     const limit = parseInt(req.query.limit as string) || 3
 
-    const allBlogs = await req.context.services?.blog.getAllBlogs(page, limit)
+    const allBlogs = await req.context.services?.blog.getAllBlogs(
+      req.query as QueryString
+    )
 
     console.log(allBlogs)
     return res.status(200).json(allBlogs)
@@ -100,5 +122,6 @@ export {
   getAblogPost,
   getAllBlogPost,
   updateBlogPost,
-  deleteBlogPost
+  deleteBlogPost,
+  getAllMyBlogPost
 }

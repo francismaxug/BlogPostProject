@@ -4,13 +4,15 @@ import {
   updateBlogPost,
   getAblogPost,
   getAllBlogPost,
-  deleteBlogPost
+  deleteBlogPost,
+  getAllMyBlogPost
 } from "../../controllers/blogController"
 import { protect } from "../../middleware/auth"
 
 const router = Router()
 router.post("/create-blog", protect, createBlogPost)
 router.get("/getAllBlogs", protect, getAllBlogPost)
+router.get("/getMyBlogs", protect, getAllMyBlogPost)
 router
   .route("/:id")
   .get(protect, getAblogPost)

@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken"
 import UserAdmin from "../models/userModel"
 import { catchAsync } from "../utils/catchAsync"
-import AppError from "../utils/appError"
 import { Request, Response, NextFunction } from "express"
 import { IUserSchema } from "../types/user"
 import createError from "../utils/appError"
@@ -13,12 +12,12 @@ declare module "express-serve-static-core" {
 }
 const protect = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    console.log(req)
+    // console.log(req)
     let token
     //--get the token-----
     token = req.cookies.jwt
 
-    console.log(token)
+    // console.log(token)
 
     if (!token) return next(createError("no token found", 404))
 

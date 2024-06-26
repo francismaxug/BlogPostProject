@@ -1,11 +1,17 @@
 import { IAppContext, IAppService } from "../types/app"
 import { IBlog } from "../types/blog"
 import createError from "../utils/appError"
+import HandlePaginate from "../utils/handlePaginate"
+import APIFeatures from "../utils/handlePaginate"
 
+interface QueryString {
+  [key: string]: string | string[] | undefined // Allow any string key-value pair
+}
 export class BlogServices extends IAppService {
   constructor(context: IAppContext) {
     super(context)
   }
+
   //---create a blog post------------
   createBlog = async (input: IBlog) => {
     try {
@@ -34,21 +40,57 @@ export class BlogServices extends IAppService {
     }
   }
 
+  //---get-all blog-by-The --login-user---
+  getMyBlogs = async (queryString: QueryString, userId: string) => {
+    const query = this.queryDB.blog.find({ author: userId }).populate("author")
+    // Create an instance of handlePaginate
+    const handlePaginate = new HandlePaginate(query, queryString as QueryString)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate()
+
+    const blogs = await handlePaginate.query
+
+    const totalBlogs = blogs.length
+    const totalPages = Math.ceil(
+      totalBlogs === 0
+        ? 0
+        : totalBlogs / (Number(queryString.limit) || handlePaginate.limit)
+    )
+    const currentPage = Number(queryString?.page) || handlePaginate.page
+    return {
+      blogs,
+      totalPages,
+      currentPage
+    }
+  }
+
   //---get all blog posts------------
-  getAllBlogs = async (page: number, limit: number) => {
-    console.log(`Page: ${page}, Limit: ${limit}`)
+
+  getAllBlogs = async (queryString: QueryString) => {
+    const query = this.queryDB.blog.find().populate("author") // Start the query
+    // Create an instance of APIFeatures
+    const handlePaginate = new HandlePaginate(query, queryString as QueryString)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate()
+
+    const blogs = await handlePaginate.query
     const totalBlogs = await this.queryDB.blog.countDocuments()
-    const blogs = await this.queryDB.blog
-      .find()
-      .populate("author")
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .sort({ createdAt: -1 }) // Sort by newest first
+
+    const totalPages = Math.ceil(
+      totalBlogs === 0
+        ? 0
+        : totalBlogs / (Number(queryString?.limit) || handlePaginate.limit)
+    )
+    const currentPage = Number(queryString?.page) || handlePaginate.page
 
     return {
       blogs,
-      totalPages: Math.ceil(totalBlogs / limit),
-      currentPage: page
+      totalPages,
+      currentPage
     }
   }
 
