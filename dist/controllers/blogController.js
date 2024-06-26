@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteBlogPost = exports.updateBlogPost = exports.getAllBlogPost = exports.getAblogPost = exports.createBlogPost = void 0;
+exports.getAllMyBlogPost = exports.deleteBlogPost = exports.updateBlogPost = exports.getAllBlogPost = exports.getAblogPost = exports.createBlogPost = void 0;
 const catchAsync_1 = require("../utils/catchAsync");
 const appValidation_1 = require("../validators/appValidation");
 const appError_1 = __importDefault(require("../utils/appError"));
@@ -47,12 +47,21 @@ const getAblogPost = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(
     return res.status(200).json(blog);
 }));
 exports.getAblogPost = getAblogPost;
+//---get all user blog post----------------
+const getAllMyBlogPost = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
+    const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
+    const allBlogs = yield ((_b = req.context.services) === null || _b === void 0 ? void 0 : _b.blog.getMyBlogs(req.query, userId.toString()));
+    console.log(allBlogs);
+    return res.status(200).json(allBlogs);
+}));
+exports.getAllMyBlogPost = getAllMyBlogPost;
 //-----Get-all-blog-Post-----------------
 const getAllBlogPost = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 3;
-    const allBlogs = yield ((_a = req.context.services) === null || _a === void 0 ? void 0 : _a.blog.getAllBlogs(page, limit));
+    const allBlogs = yield ((_a = req.context.services) === null || _a === void 0 ? void 0 : _a.blog.getAllBlogs(req.query));
     console.log(allBlogs);
     return res.status(200).json(allBlogs);
 }));

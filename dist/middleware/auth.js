@@ -18,11 +18,11 @@ const userModel_1 = __importDefault(require("../models/userModel"));
 const catchAsync_1 = require("../utils/catchAsync");
 const appError_1 = __importDefault(require("../utils/appError"));
 const protect = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req);
+    // console.log(req)
     let token;
     //--get the token-----
     token = req.cookies.jwt;
-    console.log(token);
+    // console.log(token)
     if (!token)
         return next((0, appError_1.default)("no token found", 404));
     const decodeUser = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);

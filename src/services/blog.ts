@@ -2,7 +2,6 @@ import { IAppContext, IAppService } from "../types/app"
 import { IBlog } from "../types/blog"
 import createError from "../utils/appError"
 import HandlePaginate from "../utils/handlePaginate"
-import APIFeatures from "../utils/handlePaginate"
 
 interface QueryString {
   [key: string]: string | string[] | undefined // Allow any string key-value pair
@@ -69,7 +68,7 @@ export class BlogServices extends IAppService {
   //---get all blog posts------------
 
   getAllBlogs = async (queryString: QueryString) => {
-    const query = this.queryDB.blog.find().populate("author") // Start the query
+    const query = this.queryDB.blog.find().populate("author")
     // Create an instance of APIFeatures
     const handlePaginate = new HandlePaginate(query, queryString as QueryString)
       .filter()

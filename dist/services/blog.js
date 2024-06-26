@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BlogServices = void 0;
 const app_1 = require("../types/app");
 const appError_1 = __importDefault(require("../utils/appError"));
+const handlePaginate_1 = __importDefault(require("../utils/handlePaginate"));
 class BlogServices extends app_1.IAppService {
     constructor(context) {
         super(context);
@@ -44,20 +45,46 @@ class BlogServices extends app_1.IAppService {
                 throw err;
             }
         });
-        //---get all blog posts------------
-        this.getAllBlogs = (page, limit) => __awaiter(this, void 0, void 0, function* () {
-            console.log(`Page: ${page}, Limit: ${limit}`);
-            const totalBlogs = yield this.queryDB.blog.countDocuments();
-            const blogs = yield this.queryDB.blog
-                .find()
-                .populate("author")
-                .skip((page - 1) * limit)
-                .limit(limit)
-                .sort({ createdAt: -1 }); // Sort by newest first
+        //---get-all blog-by-The --login-user---
+        this.getMyBlogs = (queryString, userId) => __awaiter(this, void 0, void 0, function* () {
+            const query = this.queryDB.blog.find({ author: userId }).populate("author");
+            // Create an instance of handlePaginate
+            const handlePaginate = new handlePaginate_1.default(query, queryString)
+                .filter()
+                .sort()
+                .limitFields()
+                .paginate();
+            const blogs = yield handlePaginate.query;
+            const totalBlogs = blogs.length;
+            const totalPages = Math.ceil(totalBlogs === 0
+                ? 0
+                : totalBlogs / (Number(queryString.limit) || handlePaginate.limit));
+            const currentPage = Number(queryString === null || queryString === void 0 ? void 0 : queryString.page) || handlePaginate.page;
             return {
                 blogs,
-                totalPages: Math.ceil(totalBlogs / limit),
-                currentPage: page
+                totalPages,
+                currentPage
+            };
+        });
+        //---get all blog posts------------
+        this.getAllBlogs = (queryString) => __awaiter(this, void 0, void 0, function* () {
+            const query = this.queryDB.blog.find().populate("author");
+            // Create an instance of APIFeatures
+            const handlePaginate = new handlePaginate_1.default(query, queryString)
+                .filter()
+                .sort()
+                .limitFields()
+                .paginate();
+            const blogs = yield handlePaginate.query;
+            const totalBlogs = yield this.queryDB.blog.countDocuments();
+            const totalPages = Math.ceil(totalBlogs === 0
+                ? 0
+                : totalBlogs / (Number(queryString === null || queryString === void 0 ? void 0 : queryString.limit) || handlePaginate.limit));
+            const currentPage = Number(queryString === null || queryString === void 0 ? void 0 : queryString.page) || handlePaginate.page;
+            return {
+                blogs,
+                totalPages,
+                currentPage
             };
         });
         //----update blog post--------------------
