@@ -134,3 +134,40 @@ This backend API is built using Node.js, Express.js, and Mongoose (for MongoDB i
         "message": "Comment deleted successfully"
       }
       ```
+## 4. Database Schema
+### 4.1 User
+```javascript
+// models/userModel.js
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+const userSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+    select: false, // Don't include the password in API responses
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+// Hash the password before saving the user
+userSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) {
+    return next();
+  }
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
+// Compare passwords for login
+userSchema.methods.comparePassword = async function(enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+const User = mongoose.model('User', userSchema);
+module.exports = User;
