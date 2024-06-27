@@ -137,7 +137,7 @@ This backend API is built using Node.js, Express.js, and Mongoose (for MongoDB i
 ## 4. Database Schema
 ### 4.1 User
 ```javascript
-// models/userModel.js
+// models/userModel.ts
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const userSchema = new mongoose.Schema({
@@ -171,3 +171,68 @@ userSchema.methods.comparePassword = async function(enteredPassword) {
 };
 const User = mongoose.model('User', userSchema);
 module.exports = User;
+
+```
+
+
+### 4.2 Blog
+```javascript
+// models/blogModel.ts
+const mongoose = require('mongoose');
+const blogSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+  },
+  content: {
+    type: String,
+    required: true,
+  },
+  author: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+const Blog = mongoose.model('Blog', blogSchema);
+module.exports = Blog;
+```
+
+### 4.3 Comment
+```javascript
+// models/commentModel.js
+const mongoose = require('mongoose');
+const commentSchema = new mongoose.Schema({
+  comment: {
+    type: String,
+    required: true,
+  },
+  author: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  post: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Blog',
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+const Comment = mongoose.model('Comment', commentSchema);
+module.exports = Comment;
