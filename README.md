@@ -236,3 +236,32 @@ const commentSchema = new mongoose.Schema({
 });
 const Comment = mongoose.model('Comment', commentSchema);
 module.exports = Comment;
+```
+## 5. Project Setup
+```
+## Clone Repository
+git clone https://github.com/francismaxug/BlogPostProject
+cd BlogPostProject
+
+## Install dependencies
+npm install
+
+## Configure Environment Variables
+Create a .env file at the root of the project with the following content:
+PORT=5000
+MONGO_URI=mongodb://localhost:27017/your-database-name
+JWT_SECRET=your-secret-key
+
+## Run the project
+npm run dev
+```
+
+# 6. Design and Implementation Decisions
+
+* Authentication: JWT was chosen with HTPP Only Cookie for authentication due to its simplicity and security.
+* Database: MongoDB was selected for its scalability and flexibility.
+* Pagination: Pagination was implemented for /api/posts and /api/posts/:postId/comments to handle large datasets efficiently.
+* Error Handling: Custom error handling with createError was implemented for better error management and client-side feedback.
+* TypeScript: TypeScript was used to ensure type safety and code maintainability.
+
+  ## END
