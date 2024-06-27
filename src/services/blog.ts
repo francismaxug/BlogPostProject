@@ -43,7 +43,7 @@ export class BlogServices extends IAppService {
   getMyBlogs = async (queryString: QueryString, userId: string) => {
     const query = this.queryDB.blog.find({ author: userId }).populate("author")
     // Create an instance of handlePaginate
-    const handlePaginate = new HandlePaginate(query, queryString as QueryString)
+    const handlePaginate = new HandlePaginate(query, queryString)
       .filter()
       .sort()
       .limitFields()
@@ -70,7 +70,7 @@ export class BlogServices extends IAppService {
   getAllBlogs = async (queryString: QueryString) => {
     const query = this.queryDB.blog.find().populate("author")
     // Create an instance of APIFeatures
-    const handlePaginate = new HandlePaginate(query, queryString as QueryString)
+    const handlePaginate = new HandlePaginate(query, queryString)
       .filter()
       .sort()
       .limitFields()
@@ -123,6 +123,7 @@ export class BlogServices extends IAppService {
     }
   }
 
+  //-------delete blog post----------------
   deleteBlog = async (blogId: string, authorId: string) => {
     try {
       const blog = await this.queryDB.blog.findById(blogId)

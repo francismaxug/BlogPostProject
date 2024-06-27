@@ -1,7 +1,11 @@
 import { IAppContext, IAppService } from "../types/app"
 import { IComment, ICretaeComment } from "../types/comment"
 import createError from "../utils/appError"
+import HandlePaginate from "../utils/handlePaginate"
 
+interface QueryString {
+  [key: string]: string | string[] | undefined // Allow any string key-value pair
+}
 export class CommentServices extends IAppService {
   constructor(context: IAppContext) {
     super(context)
@@ -21,22 +25,34 @@ export class CommentServices extends IAppService {
     }
   }
 
-  getCommentsByPost = async (postId: string, page: number, limit: number) => {
+  getCommentsByPost = async (queryString: QueryString, postId: string) => {
     try {
-      const totalComments = await this.queryDB.comment.countDocuments({
-        post: postId
-      }) // Count total comments for this post
-      const comments = await this.queryDB.comment
+      const query = this.queryDB.comment
         .find({ post: postId })
         .populate("author")
-        .skip((page - 1) * limit) // Calculate skip value
-        .limit(limit) // Limit the number of comments
-        .sort({ createdAt: -1 })
 
+      const handlePaginate = new HandlePaginate(
+        query,
+        queryString 
+      )
+        .filter()
+        .sort()
+        .limitFields()
+        .paginate()
+
+      const comments = await handlePaginate.query
+
+      const totalComments = comments.length
+      const totalPages = Math.ceil(
+        totalComments === 0
+          ? 0
+          : totalComments / (Number(queryString.limit) || handlePaginate.limit)
+      )
+      const currentPage = Number(queryString?.page) || handlePaginate.page
       return {
         comments,
-        totalPages: Math.ceil(totalComments / limit), // Calculate total pages
-        currentPage: page
+        totalPages,
+        currentPage
       }
     } catch (err) {
       throw err
@@ -52,7 +68,7 @@ export class CommentServices extends IAppService {
 
       return {
         message: "Comment deleted successfully",
-        deletedComment:comment
+        deletedComment: comment
       }
     } catch (err) {
       throw err

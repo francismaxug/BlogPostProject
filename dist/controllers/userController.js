@@ -35,7 +35,7 @@ const userLogin = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(voi
         password,
         res
     }));
-    console.log(user);
+    // console.log(user)
     return res.status(200).json(user);
 }));
 exports.userLogin = userLogin;
@@ -54,7 +54,7 @@ const createUser = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(vo
         return next((0, appError_1.default)(errorInputs, 400));
     }
     const user = yield ((_a = req.context.services) === null || _a === void 0 ? void 0 : _a.user.createUser(Object.assign(Object.assign({}, req.body), { res })));
-    console.log(user);
+    // console.log(user)
     return res.status(200).json(user);
 }));
 exports.createUser = createUser;

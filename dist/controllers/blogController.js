@@ -20,10 +20,9 @@ const appError_1 = __importDefault(require("../utils/appError"));
 const createBlogPost = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     const { title, content } = req.body;
+    //------get user_id from middleware---------
     const author = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
-    console.log(author);
     const { error } = (0, appValidation_1.blogValidator)(req.body);
-    console.log(error);
     if (error) {
         const errorInputs = error.details[0].message;
         console.log(errorInputs);
@@ -34,7 +33,7 @@ const createBlogPost = (0, catchAsync_1.catchAsync)((req, res, next) => __awaite
         content,
         author
     }));
-    console.log(blog);
+    // console.log(blog)
     return res.status(200).json(blog);
 }));
 exports.createBlogPost = createBlogPost;
@@ -43,26 +42,25 @@ const getAblogPost = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(
     var _a;
     const blogId = req.params.id;
     const blog = yield ((_a = req.context.services) === null || _a === void 0 ? void 0 : _a.blog.getBlog(blogId));
-    console.log(blog);
+    // console.log(blog)
     return res.status(200).json(blog);
 }));
 exports.getAblogPost = getAblogPost;
 //---get all user blog post----------------
 const getAllMyBlogPost = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
+    //------get user_id from middleware---------
     const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
     const allBlogs = yield ((_b = req.context.services) === null || _b === void 0 ? void 0 : _b.blog.getMyBlogs(req.query, userId.toString()));
-    console.log(allBlogs);
+    // console.log(allBlogs)
     return res.status(200).json(allBlogs);
 }));
 exports.getAllMyBlogPost = getAllMyBlogPost;
 //-----Get-all-blog-Post-----------------
 const getAllBlogPost = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 3;
     const allBlogs = yield ((_a = req.context.services) === null || _a === void 0 ? void 0 : _a.blog.getAllBlogs(req.query));
-    console.log(allBlogs);
+    // console.log(allBlogs)
     return res.status(200).json(allBlogs);
 }));
 exports.getAllBlogPost = getAllBlogPost;
@@ -71,6 +69,7 @@ const updateBlogPost = (0, catchAsync_1.catchAsync)((req, res, next) => __awaite
     var _a, _b;
     const blogId = req.params.id;
     const { title, content } = req.body;
+    //------get user_id from middleware---------
     const author = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
     //---update blog---------------
     const updatedBlog = yield ((_b = req.context.services) === null || _b === void 0 ? void 0 : _b.blog.updateBlog(blogId, author.toString(), {
@@ -78,7 +77,7 @@ const updateBlogPost = (0, catchAsync_1.catchAsync)((req, res, next) => __awaite
         content,
         author
     }));
-    console.log(updatedBlog);
+    // console.log(updatedBlog)
     return res.status(200).json(updatedBlog);
 }));
 exports.updateBlogPost = updateBlogPost;
@@ -86,10 +85,11 @@ exports.updateBlogPost = updateBlogPost;
 const deleteBlogPost = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     const blogId = req.params.id;
-    const author = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id; //from middleware
+    //------get user_id from middleware---------
+    const author = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
     //---update blog---------------
     const deleteBlgMessage = yield ((_b = req.context.services) === null || _b === void 0 ? void 0 : _b.blog.deleteBlog(blogId, author.toString()));
-    console.log(deleteBlgMessage);
+    // console.log(deleteBlgMessage)
     return res.status(200).json(deleteBlgMessage);
 }));
 exports.deleteBlogPost = deleteBlogPost;

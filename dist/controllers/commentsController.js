@@ -19,12 +19,9 @@ const appError_1 = __importDefault(require("../utils/appError"));
 //-------create a Comment--------
 const createComment = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
-    console.log(req);
     const { comment } = req.body;
-    console.log(comment);
     const author = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
     const postId = req.params.postId;
-    console.log(author, postId);
     const { error } = (0, appValidation_1.commentValidator)(req.body);
     console.log(error);
     if (error) {
@@ -38,7 +35,7 @@ const createComment = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter
         author,
         post: postId
     }));
-    console.log(createdComment);
+    // console.log(createdComment)
     return res.status(200).json(createdComment);
 }));
 exports.createComment = createComment;
@@ -46,10 +43,8 @@ exports.createComment = createComment;
 const getCommentByPost = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const postId = req.params.postId;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const getCommentbyPost = yield ((_a = req.context.services) === null || _a === void 0 ? void 0 : _a.comment.getCommentsByPost(postId, page, limit));
-    console.log(getCommentByPost);
+    const getCommentbyPost = yield ((_a = req.context.services) === null || _a === void 0 ? void 0 : _a.comment.getCommentsByPost(req.query, postId));
+    // console.log(getCommentByPost)
     return res.status(200).json(getCommentbyPost);
 }));
 exports.getCommentByPost = getCommentByPost;

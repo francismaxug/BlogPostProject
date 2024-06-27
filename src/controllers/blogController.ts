@@ -11,11 +11,11 @@ interface QueryString {
 const createBlogPost = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { title, content } = req.body
+
+     //------get user_id from middleware---------
     const author = req.user?._id
-    console.log(author)
 
     const { error } = blogValidator(req.body)
-    console.log(error)
 
     if (error) {
       const errorInputs = error.details[0].message
@@ -29,7 +29,7 @@ const createBlogPost = catchAsync(
       author
     })
 
-    console.log(blog)
+    // console.log(blog)
     return res.status(200).json(blog)
   }
 )
@@ -40,7 +40,7 @@ const getAblogPost = catchAsync(
     const blogId = req.params.id
     const blog = await req.context.services?.blog.getBlog(blogId)
 
-    console.log(blog)
+    // console.log(blog)
     return res.status(200).json(blog)
   }
 )
@@ -49,6 +49,8 @@ const getAblogPost = catchAsync(
 
 const getAllMyBlogPost = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+
+     //------get user_id from middleware---------
     const userId = req.user?._id
 
     const allBlogs = await req.context.services?.blog.getMyBlogs(
@@ -56,7 +58,7 @@ const getAllMyBlogPost = catchAsync(
       userId.toString()
     )
 
-    console.log(allBlogs)
+    // console.log(allBlogs)
     return res.status(200).json(allBlogs)
   }
 )
@@ -64,14 +66,11 @@ const getAllMyBlogPost = catchAsync(
 //-----Get-all-blog-Post-----------------
 const getAllBlogPost = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const page = parseInt(req.query.page as string) || 1
-    const limit = parseInt(req.query.limit as string) || 3
-
     const allBlogs = await req.context.services?.blog.getAllBlogs(
       req.query as QueryString
     )
 
-    console.log(allBlogs)
+    // console.log(allBlogs)
     return res.status(200).json(allBlogs)
   }
 )
@@ -81,6 +80,8 @@ const updateBlogPost = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const blogId = req.params.id
     const { title, content } = req.body
+
+     //------get user_id from middleware---------
     const author = req.user?._id
 
     //---update blog---------------
@@ -94,7 +95,7 @@ const updateBlogPost = catchAsync(
       }
     )
 
-    console.log(updatedBlog)
+    // console.log(updatedBlog)
     return res.status(200).json(updatedBlog)
   }
 )
@@ -104,7 +105,8 @@ const deleteBlogPost = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const blogId = req.params.id
 
-    const author = req.user?._id //from middleware
+    //------get user_id from middleware---------
+    const author = req.user?._id
 
     //---update blog---------------
     const deleteBlgMessage = await req.context.services?.blog.deleteBlog(
@@ -112,7 +114,7 @@ const deleteBlogPost = catchAsync(
       author.toString()
     )
 
-    console.log(deleteBlgMessage)
+    // console.log(deleteBlgMessage)
     return res.status(200).json(deleteBlgMessage)
   }
 )

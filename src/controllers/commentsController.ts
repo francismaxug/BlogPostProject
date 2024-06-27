@@ -2,19 +2,18 @@ import { NextFunction, Request, Response } from "express"
 import { catchAsync } from "../utils/catchAsync"
 import { commentValidator } from "../validators/appValidation"
 import createError from "../utils/appError"
-import Comment from "../models/commentModel"
+
+interface QueryString {
+  [key: string]: string | string[] | undefined // Allow any string key-value pair
+}
 
 //-------create a Comment--------
 
-
 const createComment = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    console.log(req)
     const { comment } = req.body
-    console.log(comment)
     const author = req.user?._id
     const postId = req.params.postId
-    console.log(author, postId)
 
     const { error } = commentValidator(req.body)
     console.log(error)
@@ -33,7 +32,7 @@ const createComment = catchAsync(
       post: postId
     })
 
-    console.log(createdComment)
+    // console.log(createdComment)
     return res.status(200).json(createdComment)
   }
 )
@@ -43,13 +42,14 @@ const createComment = catchAsync(
 const getCommentByPost = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const postId = req.params.postId
-    const page = parseInt(req.query.page as string) || 1
-    const limit = parseInt(req.query.limit as string) || 10
 
     const getCommentbyPost =
-      await req.context.services?.comment.getCommentsByPost(postId, page, limit)
+      await req.context.services?.comment.getCommentsByPost(
+        req.query as QueryString,
+        postId
+      )
 
-    console.log(getCommentByPost)
+    // console.log(getCommentByPost)
     return res.status(200).json(getCommentbyPost)
   }
 )
@@ -57,10 +57,11 @@ const getCommentByPost = catchAsync(
 const deleteComment = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const commentId = req.params.commentId
-    const deleteComment = await req.context.services?.comment.deleteComment(commentId)
+    const deleteComment = await req.context.services?.comment.deleteComment(
+      commentId
+    )
     return res.status(200).json(deleteComment)
   }
-
 )
 
 export { createComment, getCommentByPost, deleteComment }

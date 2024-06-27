@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommentServices = void 0;
 const app_1 = require("../types/app");
 const appError_1 = __importDefault(require("../utils/appError"));
+const handlePaginate_1 = __importDefault(require("../utils/handlePaginate"));
 class CommentServices extends app_1.IAppService {
     constructor(context) {
         super(context);
@@ -31,21 +32,26 @@ class CommentServices extends app_1.IAppService {
                 throw err;
             }
         });
-        this.getCommentsByPost = (postId, page, limit) => __awaiter(this, void 0, void 0, function* () {
+        this.getCommentsByPost = (queryString, postId) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const totalComments = yield this.queryDB.comment.countDocuments({
-                    post: postId
-                }); // Count total comments for this post
-                const comments = yield this.queryDB.comment
+                const query = this.queryDB.comment
                     .find({ post: postId })
-                    .populate("author")
-                    .skip((page - 1) * limit) // Calculate skip value
-                    .limit(limit) // Limit the number of comments
-                    .sort({ createdAt: -1 });
+                    .populate("author");
+                const handlePaginate = new handlePaginate_1.default(query, queryString)
+                    .filter()
+                    .sort()
+                    .limitFields()
+                    .paginate();
+                const comments = yield handlePaginate.query;
+                const totalComments = comments.length;
+                const totalPages = Math.ceil(totalComments === 0
+                    ? 0
+                    : totalComments / (Number(queryString.limit) || handlePaginate.limit));
+                const currentPage = Number(queryString === null || queryString === void 0 ? void 0 : queryString.page) || handlePaginate.page;
                 return {
                     comments,
-                    totalPages: Math.ceil(totalComments / limit), // Calculate total pages
-                    currentPage: page
+                    totalPages,
+                    currentPage
                 };
             }
             catch (err) {

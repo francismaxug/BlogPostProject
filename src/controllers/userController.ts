@@ -6,10 +6,7 @@ import { Request, Response, NextFunction } from "express"
 import {
   userLoginValidator,
   userRegisterValidator,
-  blogValidator,
-  commentValidator
 } from "../validators/appValidation"
-import generateToken from "../utils/token"
 import { ICreateUser, IUserLogin } from "../types/user"
 
 declare module "express-serve-static-core" {
@@ -42,7 +39,7 @@ const userLogin = catchAsync(
       res
     } as IUserLogin)
 
-    console.log(user)
+    // console.log(user)
 
     return res.status(200).json(user)
   }
@@ -72,7 +69,7 @@ const createUser = catchAsync(
       res
     } as ICreateUser)
 
-    console.log(user)
+    // console.log(user)
     return res.status(200).json(user)
   }
 )

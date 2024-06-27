@@ -107,6 +107,7 @@ class BlogServices extends app_1.IAppService {
                 throw err;
             }
         });
+        //-------delete blog post----------------
         this.deleteBlog = (blogId, authorId) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const blog = yield this.queryDB.blog.findById(blogId);
