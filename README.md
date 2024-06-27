@@ -300,5 +300,6 @@ npm run dev
 * Pagination: Pagination was implemented for /api/posts and /api/posts/:postId/comments to handle large datasets efficiently.
 * Error Handling: Custom error handling with createError was implemented for better error management and client-side feedback.
 * TypeScript: TypeScript was used to ensure type safety and code maintainability.
+* Object Oriented Programming: OOP was used to ensure separaion of concern and code quality
 
   ## END
